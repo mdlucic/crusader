@@ -1,0 +1,106 @@
+#!/bin/bash
+echo '         *_   _   _   _   _   _ *         ';
+echo ' ^       | \_/ \_/ \_/ \_/ \_/ \|       ^ ';
+echo ' |       |                      |       | ';
+echo ' |       |       Crusader       |       | ';
+echo ' |  (*)  |_   _   _   _   _   _ |  \^/  | ';
+echo ' | _<">_ | \_/ \_/ \_/ \_/ \_/ \| _(#)_ | ';
+echo 'o+o \ / \0        *       *     0/ \ / (=)';
+echo ' 0/\ ^ /\/   *          *    *  \/\ ^ /\0 ';
+echo '   /_^_\ | *        *           | /_^_\   ';
+echo '   || || |     *     *     *    | || ||   ';
+echo '   d|_|b_T______________________T_d|_|b   ';
+echo "";
+echo "";
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
+
+# Get new project name
+read -p "Enter mysql username: " mysql_user;
+read -p "Enter mysql password: " -s mysql_password;
+
+echo "";
+echo "";
+
+read -p "Enter e-mail: " email;
+read -p "Enter e-mail password: " -s email_password;
+
+echo "";
+echo "";
+
+
+echo "Creating Folders...";
+mkdir $1; 
+mkdir $1/bin;
+mkdir $1/config;
+mkdir $1/docs;
+mkdir $1/public;
+mkdir $1/public/view;
+mkdir $1/resources;
+mkdir $1/resources/html;
+mkdir $1/resources/css;
+mkdir $1/resources/js;
+mkdir $1/resources/images;
+mkdir $1/src;
+mkdir $1/src/classes;
+mkdir $1/src/model;
+mkdir $1/tests;
+mkdir $1/admin;
+echo "Complete!";
+echo "";
+
+echo "Creating Files...";
+
+cp -r $DIR/src/index.php $1/;
+
+cp -r $DIR/src/classes/User_Auth.php $1/src/classes/;
+
+cp -r $DIR/src/model/logout.php $1/src/model/;
+cp -r $DIR/src/model/login_verification.php $1/src/model/;
+cp -r $DIR/src/model/register.php $1/src/model/;
+cp -r $DIR/src/model/register_validation.php $1/src/model/;
+cp -r $DIR/src/model/send_email.php $1/src/model/;
+cp -r $DIR/src/model/verify_email.php $1/src/model/;
+
+cp -r $DIR/src/config/database.php $1/config/;
+
+cp -r $DIR/src/public/view/register.php $1/public/view/;
+cp -r $DIR/src/public/view/login.php $1/public/view/;
+
+cp -r $DIR/src/resources/css/style.css $1/resources/css/;
+cp -r $DIR/src/resources/images/logo.png $1/resources/images/;
+cp -r $DIR/src/resources/html/header.php $1/resources/html/;
+cp -r $DIR/src/resources/php/user_error.php $1/resources/php/;
+cp -r $DIR/src/resources/php/time.php $1/resources/php/;
+
+cp -r $DIR/src/vendor $1/;
+cp -r $DIR/src/composer.json $1/;
+cp -r $DIR/src/composer.lock $1/;
+
+
+sed -i "14i private "'$user = '"'""$mysql_user""';" $1/config/database.php;
+sed -i "15i private "'$password = '"'""$mysql_password""';" $1/config/database.php;
+
+sed -i "17i private "'$dbc = ''"mysql:host=localhost;dbname='"$1"';charset=UTF8"'";" $1/config/database.php;
+
+# /src/model/send_email.php
+sed -i "11i define('GUSER', ""'""$email""');" $1/src/model/send_email.php;
+sed -i "12i define('GPASS', ""'""$email_password""');" $1/src/model/send_email.php;
+
+sed -i "25i"'$from = ''"'"$email"'";' $1/src/model/register_validation.php;
+
+echo "Complete!";
+
+echo "Updating Composer";
+cd $1;
+composer update;
+cd ..;
+echo "Composer updated";
+
+mariadb -u $mysql_user -p$mysql_password --execute="CREATE DATABASE $1; USE $1; CREATE TABLE user_profile ( id int(11) NOT NULL AUTO_INCREMENT, PRIMARY KEY (id), first_name varchar(100) NOT NULL, last_name varchar(100) NOT NULL, username varchar(100) NOT NULL, email varchar(255) NOT NULL, password varchar(255) NOT NULL, status enum('Disabled','Enabled') NOT NULL, registration_date date NOT NULL DEFAULT current_timestamp(), verification_code varchar(255) NOT NULL ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+
+echo $1 is finished building;
+
+
+
+firefox --detach 127.0.0.1/test/$1/public/view/register.php;

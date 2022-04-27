@@ -1,0 +1,77 @@
+@font-face {
+  font-family: lato-regular;
+  src: url(Lato-Regular.ttf);
+}
+
+body {
+  background-color: #000000;
+  font-family: lato-regular;
+  color: #ffffff;
+}
+
+.login {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align:center;
+}
+
+a, p {
+  text-decoration: none;
+  color: white;
+}
+
+.textbox {
+  height:2.5em;
+  width:20em;
+  font-size:16px;
+}
+
+input{
+ text-align:center;
+}
+
+button {
+  height:2.5em;
+  width:8.5em;
+  border-radius: 30px;
+  background-color:blue;
+  border:none;
+  color:white;
+  font-size:16px;
+
+}
+
+.button {
+  height:2.5em;
+  width:8.5em;
+  border-radius: 30px;
+  background-color:#00008b;
+  border:none;
+  color:white;
+  font-size:16px;
+}
+
+.menu_align {
+    display: flex;
+    align-items:center;
+}
+
+.menu_border {
+  padding: 0px -10px 0px -10px;
+  border-bottom: solid;
+}
+
+
+@media screen and (max-width: 980px) {
+.login {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align:center;
+
+  }
+}
+
